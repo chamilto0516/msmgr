@@ -75,6 +75,10 @@ func (s stubHealthClient) DeleteDocument(context.Context, string, string) (meili
 	return meili.Task{}, s.err
 }
 
+func (s stubHealthClient) DeleteAllDocuments(context.Context, string) (meili.Task, error) {
+	return meili.Task{}, s.err
+}
+
 func (s stubHealthClient) AddDocuments(context.Context, string, []meili.Document) (meili.Task, error) {
 	return meili.Task{}, s.err
 }
@@ -84,18 +88,19 @@ func (s stubHealthClient) GetTask(context.Context, int) (meili.Task, error) {
 }
 
 type stubAPIClient struct {
-	health    meili.Health
-	indexes   []meili.Index
-	index     meili.Index
-	documents []meili.Document
-	document  meili.Document
-	searches  map[string]meili.SearchResult
-	searchLog *[]searchCall
-	created   meili.Task
-	deleted   meili.Task
-	added     *[]meili.Document
-	taskQueue *[]meili.Task
-	err       error
+	health     meili.Health
+	indexes    []meili.Index
+	index      meili.Index
+	documents  []meili.Document
+	document   meili.Document
+	searches   map[string]meili.SearchResult
+	searchLog  *[]searchCall
+	created    meili.Task
+	deleted    meili.Task
+	deletedAll meili.Task
+	added      *[]meili.Document
+	taskQueue  *[]meili.Task
+	err        error
 }
 
 type searchCall struct {
@@ -156,6 +161,13 @@ func (s stubAPIClient) DeleteIndex(context.Context, string) (meili.Task, error) 
 }
 
 func (s stubAPIClient) DeleteDocument(context.Context, string, string) (meili.Task, error) {
+	return s.deleted, s.err
+}
+
+func (s stubAPIClient) DeleteAllDocuments(context.Context, string) (meili.Task, error) {
+	if s.deletedAll != (meili.Task{}) {
+		return s.deletedAll, s.err
+	}
 	return s.deleted, s.err
 }
 
@@ -890,6 +902,72 @@ func TestRunDocumentsDeleteRequiresIDs(t *testing.T) {
 	}
 
 	if !strings.Contains(err.Error(), "missing index UID or document ID") {
+		t.Fatalf("unexpected error %q", err)
+	}
+}
+
+func TestRunDocumentsDeleteAll(t *testing.T) {
+	var stdout bytes.Buffer
+	app := &App{
+		stdout: &stdout,
+		loadConfig: func() (config.Config, error) {
+			return config.Config{HTTPAddr: "http://localhost:7700"}, nil
+		},
+		newClient: func(config.Config) apiClient {
+			return stubAPIClient{
+				deletedAll: meili.Task{TaskUID: 62, IndexUID: "test", Status: "enqueued", Type: "documentDeletion"},
+			}
+		},
+	}
+
+	if err := app.Run([]string{"documents", "delete-all", "test"}); err != nil {
+		t.Fatalf("Run returned error: %v", err)
+	}
+
+	if got := stdout.String(); !strings.Contains(got, "enqueued\ttest\ttask=62\tstatus=enqueued\ttype=documentDeletion\twait=false") {
+		t.Fatalf("unexpected output %q", got)
+	}
+}
+
+func TestRunDocumentsDeleteAllWaitsForTask(t *testing.T) {
+	var stdout bytes.Buffer
+	taskQueue := []meili.Task{{TaskUID: 62, Status: "succeeded"}}
+	client := &stubAPIClient{
+		deletedAll: meili.Task{TaskUID: 62, IndexUID: "test", Status: "enqueued", Type: "documentDeletion"},
+		taskQueue:  &taskQueue,
+	}
+	app := &App{
+		stdout: &stdout,
+		loadConfig: func() (config.Config, error) {
+			return config.Config{HTTPAddr: "http://localhost:7700"}, nil
+		},
+		newClient: func(config.Config) apiClient {
+			return client
+		},
+		now: func() time.Time {
+			return time.Date(2026, 6, 29, 12, 0, 0, 0, time.UTC)
+		},
+		sleep: func(time.Duration) {},
+	}
+
+	if err := app.Run([]string{"documents", "delete-all", "test", "--wait"}); err != nil {
+		t.Fatalf("Run returned error: %v", err)
+	}
+
+	if got := stdout.String(); !strings.Contains(got, "enqueued\ttest\ttask=62\tstatus=succeeded\ttype=documentDeletion\twait=true") {
+		t.Fatalf("unexpected output %q", got)
+	}
+}
+
+func TestRunDocumentsDeleteAllRequiresIndex(t *testing.T) {
+	app := NewApp(&bytes.Buffer{})
+
+	err := app.Run([]string{"documents", "delete-all"})
+	if err == nil {
+		t.Fatal("expected error")
+	}
+
+	if !strings.Contains(err.Error(), "missing index UID for documents delete-all") {
 		t.Fatalf("unexpected error %q", err)
 	}
 }

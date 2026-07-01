@@ -249,6 +249,22 @@ func (c *Client) DeleteDocument(ctx context.Context, indexUID, documentID string
 	return task, nil
 }
 
+func (c *Client) DeleteAllDocuments(ctx context.Context, indexUID string) (Task, error) {
+	path := fmt.Sprintf("/indexes/%s/documents", url.PathEscape(indexUID))
+
+	req, err := c.newRequest(ctx, http.MethodDelete, path, nil)
+	if err != nil {
+		return Task{}, err
+	}
+
+	var task Task
+	if err := c.do(req, &task); err != nil {
+		return Task{}, err
+	}
+
+	return task, nil
+}
+
 func (c *Client) AddDocuments(ctx context.Context, indexUID string, documents []Document) (Task, error) {
 	payload, err := json.Marshal(addDocumentsRequest(documents))
 	if err != nil {

@@ -54,6 +54,7 @@ type apiClient interface {
 	CreateIndex(ctx context.Context, uid, primaryKey string) (meili.Task, error)
 	DeleteIndex(ctx context.Context, uid string) (meili.Task, error)
 	DeleteDocument(ctx context.Context, indexUID, documentID string) (meili.Task, error)
+	DeleteAllDocuments(ctx context.Context, indexUID string) (meili.Task, error)
 	AddDocuments(ctx context.Context, indexUID string, documents []meili.Document) (meili.Task, error)
 	GetTask(ctx context.Context, taskUID int) (meili.Task, error)
 }
@@ -516,6 +517,41 @@ func (a *App) runDocuments(args []string) error {
 		}
 
 		_, err = fmt.Fprintln(a.stdout, formatTask(task))
+		return err
+	case "delete-all":
+		if len(args) < 2 {
+			return fmt.Errorf("missing index UID for documents delete-all\n\n%s", usageText)
+		}
+
+		wait := false
+		for _, arg := range args[2:] {
+			switch arg {
+			case "--wait":
+				wait = true
+			default:
+				return fmt.Errorf("unknown documents delete-all option %q\n\n%s", arg, usageText)
+			}
+		}
+
+		cfg, err := a.loadConfig()
+		if err != nil {
+			return err
+		}
+
+		client := a.newClient(cfg)
+		task, err := client.DeleteAllDocuments(context.Background(), args[1])
+		if err != nil {
+			return err
+		}
+
+		if wait {
+			if err := a.waitForTask(client, task.TaskUID); err != nil {
+				return fmt.Errorf("wait for delete-all task %d: %w", task.TaskUID, err)
+			}
+			task.Status = "succeeded"
+		}
+
+		_, err = fmt.Fprintf(a.stdout, "%s\twait=%t\n", formatTask(task), wait)
 		return err
 	case "list":
 		if len(args) < 2 {
@@ -1097,6 +1133,7 @@ Usage:
   msmgr documents get <index> <id>
   msmgr documents migrate-ids <index> [--apply]
   msmgr documents delete <index> <id>
+  msmgr documents delete-all <index> [--wait]
   msmgr documents list <index>
   msmgr split-markdown <input-path> [--output-dir dir] [--manifest path] [--split-level n] [--max-heading-level n] [--min-chars n] [--max-chars n] [--use-llm] [--dry-run]
   msmgr help

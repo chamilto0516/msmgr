@@ -25,6 +25,7 @@ cp msmgr.example.json msmgr.json
 ./bin/msmgr documents migrate-ids test
 ./bin/msmgr documents migrate-ids test --apply
 ./bin/msmgr documents delete test doc1
+./bin/msmgr documents delete-all test
 ./bin/msmgr documents list <index>
 ./bin/msmgr help
 ```

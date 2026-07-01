@@ -475,6 +475,43 @@ func TestDeleteDocument(t *testing.T) {
 	}
 }
 
+func TestDeleteAllDocuments(t *testing.T) {
+	httpClient := &http.Client{
+		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+			if r.Method != http.MethodDelete {
+				t.Fatalf("unexpected method %s", r.Method)
+			}
+
+			if r.URL.Path != "/indexes/test/documents" {
+				t.Fatalf("unexpected path %s", r.URL.Path)
+			}
+
+			return &http.Response{
+				StatusCode: http.StatusAccepted,
+				Status:     "202 Accepted",
+				Header:     http.Header{"Content-Type": []string{"application/json"}},
+				Body: io.NopCloser(strings.NewReader(`{
+					"taskUid":62,
+					"indexUid":"test",
+					"status":"enqueued",
+					"type":"documentDeletion"
+				}`)),
+				Request: r,
+			}, nil
+		}),
+	}
+
+	client := NewClient(config.Config{HTTPAddr: "http://example.test"}, httpClient)
+	task, err := client.DeleteAllDocuments(context.Background(), "test")
+	if err != nil {
+		t.Fatalf("DeleteAllDocuments returned error: %v", err)
+	}
+
+	if task.TaskUID != 62 || task.IndexUID != "test" || task.Type != "documentDeletion" {
+		t.Fatalf("unexpected task %#v", task)
+	}
+}
+
 func TestAddDocuments(t *testing.T) {
 	httpClient := &http.Client{
 		Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {

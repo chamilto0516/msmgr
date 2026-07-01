@@ -33,7 +33,14 @@
 | `msmgr documents get <index> <id>` | Fetch a single document by ID. |
 | `msmgr documents migrate-ids <index> [--apply]` | Build or apply a document ID migration plan. |
 | `msmgr documents delete <index> <id>` | Delete a document by ID. |
+| `msmgr documents delete-all <index> [--wait]` | Delete every document in an index while leaving the index itself intact. |
 | `msmgr documents list <index>` | List documents in an index. |
+
+Example:
+
+```sh
+./bin/msmgr documents delete-all books --wait
+```
 
 ### `split-markdown`
 
