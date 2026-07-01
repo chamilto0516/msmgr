@@ -71,19 +71,19 @@ What it does:
 Example:
 
 ```sh
-./bin/msmgr split-markdown test/input/bill_hamilton_linkedin_profile_notes.md --output-dir test/output --use-llm
+./bin/msmgr split-markdown path/to/input.md --output-dir test/output --use-llm
 ```
 
 Preview chunk boundaries without writing files:
 
 ```sh
-./bin/msmgr split-markdown test/input/bill_hamilton_linkedin_profile_notes.md --dry-run
+./bin/msmgr split-markdown path/to/input.md --dry-run
 ```
 
 Run it through the build target:
 
 ```sh
-make split-markdown ARGS='test/input/bill_hamilton_linkedin_profile_notes.md --output-dir test/output --use-llm'
+make split-markdown ARGS='path/to/input.md --output-dir test/output --use-llm'
 ```
 
 Output:
@@ -108,7 +108,7 @@ Each manifest record includes:
 make fmt
 make test
 make build
-make split-markdown ARGS='test/input/bill_hamilton_linkedin_profile_notes.md --output-dir test/output --use-llm'
+make split-markdown ARGS='path/to/input.md --output-dir test/output --use-llm'
 ```
 
 ## Configuration
@@ -125,4 +125,3 @@ make split-markdown ARGS='test/input/bill_hamilton_linkedin_profile_notes.md --o
 - `internal/llm/` contains the OpenAI-compatible client used by the splitter.
 - `internal/splitmd/` contains the Markdown splitting implementation.
 - `scripts/test.sh` wraps the Go test run for CI or manual verification.
-

@@ -14,7 +14,7 @@ Use the checked-in commands instead of ad hoc shell history:
 make fmt    # run gofmt on cmd/ and internal/
 make test   # run go test ./... with local cache
 make build  # compile ./cmd/msmgr to ./bin/msmgr
-make split-markdown ARGS='test/input/bill_hamilton_linkedin_profile_notes.md --output-dir test/output --use-llm'
+make split-markdown ARGS='path/to/input.md --output-dir test/output --use-llm'
 ./bin/msmgr hello
 ./bin/msmgr health
 ./bin/msmgr search "history of rome"
@@ -27,7 +27,7 @@ cp msmgr.example.json msmgr.json
 ./bin/msmgr documents migrate-ids test --apply
 ./bin/msmgr documents delete test doc1
 ./bin/msmgr documents list <index>
-./bin/msmgr split-markdown test/input/bill_hamilton_linkedin_profile_notes.md --output-dir test/output --use-llm
+./bin/msmgr split-markdown path/to/input.md --output-dir test/output --use-llm
 ./bin/msmgr help
 ```
 
