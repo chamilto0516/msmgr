@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is a small Go CLI for managing Meilisearch. Keep the executable entry point in `cmd/msmgr/main.go`, command wiring in `internal/cli/`, splitter logic in `internal/splitmd/`, helper shell scripts in `scripts/`, and planning or operational notes in root files such as `IMPLEMENTATION_PLAN.md` and `meilisearch_startup_info.txt`. Build output belongs in `bin/`, and the local Go build cache stays in `.cache/go-build/`.
+This repository is a small Go CLI for managing Meilisearch. Keep the executable entry point in `cmd/msmgr/main.go`, command wiring in `internal/cli/`, splitter logic in `internal/splitmd/`, helper shell scripts in `scripts/`, and operational notes in root files such as `meilisearch_startup_info.txt`. Build output belongs in `bin/`, and the local Go build cache stays in `.cache/go-build/`.
 
 Add new packages under `internal/` by responsibility, not by API endpoint count. For example, future Meilisearch HTTP logic should live in a focused package such as `internal/meili/`.
 
