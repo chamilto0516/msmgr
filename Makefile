@@ -2,7 +2,7 @@ APP_NAME := msmgr
 BUILD_DIR := bin
 GO_CACHE := $(CURDIR)/.cache/go-build
 
-.PHONY: build test fmt clean split-markdown
+.PHONY: build test fmt clean
 
 build:
 	mkdir -p $(GO_CACHE) $(BUILD_DIR)
@@ -17,6 +17,3 @@ fmt:
 
 clean:
 	rm -rf $(BUILD_DIR)
-
-split-markdown: build
-	./bin/$(APP_NAME) split-markdown $(ARGS)

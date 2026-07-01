@@ -1,6 +1,6 @@
 # msmgr
 
-`msmgr` is a small Go CLI for managing Meilisearch and related local workflows. It can check service health, manage indexes and documents, run search queries, migrate document IDs, and split Markdown into Meilisearch-ready chunks.
+`msmgr` is a small Go CLI for managing Meilisearch and related local workflows. It can check service health, manage indexes and documents, run search queries, and migrate document IDs.
 
 ## Commands
 
@@ -13,7 +13,6 @@
 | `msmgr search <query> [--index uid] [--limit n]` | Search one index or all indexes for a query. |
 | `msmgr indexes ...` | Manage Meilisearch indexes. |
 | `msmgr documents ...` | Manage documents inside an index. |
-| `msmgr split-markdown ...` | Split Markdown into smaller chunks and emit a JSONL manifest. |
 | `msmgr help` | Print the built-in usage text. |
 
 ### `indexes`
@@ -35,86 +34,17 @@
 | `msmgr documents delete <index> <id>` | Delete a document by ID. |
 | `msmgr documents list <index>` | List documents in an index. |
 
-### `split-markdown`
-
-```sh
-msmgr [--timeout seconds] split-markdown <input-path> \
-  [--output-dir dir] \
-  [--manifest path] \
-  [--split-level n] \
-  [--max-heading-level n] \
-  [--min-chars n] \
-  [--max-chars n] \
-  [--use-llm] \
-  [--dry-run]
-```
-
-Defaults:
-
-- `--split-level 2`
-- `--max-heading-level 3`
-- `--min-chars 220`
-- `--max-chars 1800`
-- `--output-dir test_file/output`
-- `--manifest <output-dir>/manifest.jsonl`
-
-What it does:
-
-- Parses heading structure from `.md` files or directories of `.md` files
-- Splits primarily at `##` by default
-- Recursively splits large sections at deeper headings up to `###` by default
-- Preserves heading ancestry in a JSONL manifest
-- Names chunk files as `MONIKER_descriptor_words.md`
-- Supports an OpenAI-compatible `chat/completions` endpoint for moniker and descriptor generation
-- Falls back to deterministic names if the LLM call fails
-
-Example:
-
-```sh
-./bin/msmgr split-markdown path/to/input.md --output-dir test/output --use-llm
-```
-
-Preview chunk boundaries without writing files:
-
-```sh
-./bin/msmgr split-markdown path/to/input.md --dry-run
-```
-
-Run it through the build target:
-
-```sh
-make split-markdown ARGS='path/to/input.md --output-dir test/output --use-llm'
-```
-
-Output:
-
-- Chunk files in the selected output directory
-- `manifest.jsonl` with one JSON object per chunk, unless `--manifest` overrides it
-
-Each manifest record includes:
-
-- `id`
-- `source_file`
-- `document_title`
-- `heading_path`
-- `section_level`
-- `chunk_index`
-- `output_filename`
-- `text`
-
 ## Build and Test
 
 ```sh
 make fmt
 make test
 make build
-make split-markdown ARGS='path/to/input.md --output-dir test/output --use-llm'
 ```
 
 ## Configuration
 
 - Meilisearch settings come from `msmgr.json` or `MSMGR_CONFIG`, with `MEILI_HTTP_ADDR` and `MEILI_API_KEY` as environment overrides.
-- Splitter LLM settings use the same `msmgr.json` / `MSMGR_CONFIG` / `MSMGR_LLM_*` configuration path as the rest of `msmgr`.
 - Keep real API keys out of version control and use `msmgr.example.json` as the starting point for local configuration.
 
 ## Repository Layout
@@ -122,6 +52,4 @@ make split-markdown ARGS='path/to/input.md --output-dir test/output --use-llm'
 - `cmd/msmgr/main.go` is the executable entry point.
 - `internal/cli/` wires command-line behavior.
 - `internal/meili/` contains Meilisearch API logic.
-- `internal/llm/` contains the OpenAI-compatible client used by the splitter.
-- `internal/splitmd/` contains the Markdown splitting implementation.
 - `scripts/test.sh` wraps the Go test run for CI or manual verification.
