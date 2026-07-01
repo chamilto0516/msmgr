@@ -5,4 +5,5 @@ bin/
 LLM_Connection.txt
 meilisearch_startup_info.txt
 msmgr.json
+scripts/
 test/output/

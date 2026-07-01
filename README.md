@@ -52,4 +52,3 @@ make build
 - `cmd/msmgr/main.go` is the executable entry point.
 - `internal/cli/` wires command-line behavior.
 - `internal/meili/` contains Meilisearch API logic.
-- `scripts/test.sh` wraps the Go test run for CI or manual verification.

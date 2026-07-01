@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is a small Go CLI for managing Meilisearch. Keep the executable entry point in `cmd/msmgr/main.go`, command wiring in `internal/cli/`, helper shell scripts in `scripts/`, and operational notes in root files such as `meilisearch_startup_info.txt`. Build output belongs in `bin/`, and the local Go build cache stays in `.cache/go-build/`.
+This repository is a small Go CLI for managing Meilisearch. Keep the executable entry point in `cmd/msmgr/main.go`, command wiring in `internal/cli/`, and operational notes in root files such as `meilisearch_startup_info.txt`. Build output belongs in `bin/`, and the local Go build cache stays in `.cache/go-build/`.
 
 Add new packages under `internal/` by responsibility, not by API endpoint count. For example, future Meilisearch HTTP logic should live in a focused package such as `internal/meili/`.
 
@@ -29,15 +29,13 @@ cp msmgr.example.json msmgr.json
 ./bin/msmgr help
 ```
 
-`scripts/test.sh` is the shell entry point for the same test run and is a good fit for CI or manual verification.
-
 ## Coding Style & Naming Conventions
 
 Format Go code with `gofmt`; the repository already assumes standard Go formatting and tab indentation. Use exported `CamelCase` names only when a symbol must cross package boundaries, keep internal helpers in `camelCase`, and keep packages small and explicit. Prefer standard library packages unless a dependency clearly reduces complexity.
 
 ## Testing Guidelines
 
-Use Go's built-in `testing` package and place tests beside the code they cover, as in `internal/cli/app_test.go`. Name tests by behavior, such as `TestRunHelp` or `TestRunRejectsUnknownCommand`. Cover both success paths and command errors, then run `make test` or `scripts/test.sh` before proposing changes.
+Use Go's built-in `testing` package and place tests beside the code they cover, as in `internal/cli/app_test.go`. Name tests by behavior, such as `TestRunHelp` or `TestRunRejectsUnknownCommand`. Cover both success paths and command errors, then run `make test` before proposing changes.
 
 ## Commit & Pull Request Guidelines
 
