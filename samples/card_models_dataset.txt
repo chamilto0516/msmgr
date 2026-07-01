@@ -1,0 +1,7 @@
+model,safety_index,mpg,cost_index
+Falcon-A1,8,34,6
+Falcon-A2,9,31,7
+Comet-X,6,41,5
+Granite-R,10,24,8
+Lumen-City,7,46,4
+Harbor-Van,9,22,6

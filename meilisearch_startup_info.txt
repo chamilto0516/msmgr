@@ -1,0 +1,61 @@
+How to start Meilisearch: docker run -d -p 7700:7700 -v $(pwd)/meili_data:/meili_data --name meilisearch getmeili/meilisearch:latest
+
+
+
+Config file path:	"none"
+Database path:		"./data.ms"
+Server listening on:	"http://0.0.0.0:7700"
+Environment:		"development"
+Commit SHA:		"f86f93c3bfbc953f2288ef7caf1948997bedbd2c"
+Commit date:		"unknown"
+Package version:	"1.48.1"
+
+Thank you for using Meilisearch!
+
+
+We collect anonymized analytics to improve our product and your experience. To learn more, including how to turn off analytics, visit our dedicated documentation page: https://www.meilisearch.com/docs/learn/what_is_meilisearch/telemetry
+
+Anonymous telemetry:	"Enabled"
+Instance UID:		"4cea7ca1-3542-4f32-b28d-75e948508bb1"
+
+
+
+ No master key was found. The server will accept unidentified requests.
+
+ A master key of at least 16 bytes will be required when switching to a production environment.
+
+
+We generated a new secure master key for you (you can safely use this token):
+
+>> --master-key N5QBmeZZC_0ZEWryZ7qThSj05Sm1maWq_sn48NLrvvo <<
+
+Restart Meilisearch with the argument above to use this new and secure master key.
+
+Check out Meilisearch Cloud!	https://www.meilisearch.com/cloud?utm_campaign=oss&utm_source=engine&utm_medium=cli
+Documentation:			https://www.meilisearch.com/docs
+Source code:			https://github.com/meilisearch/meilisearch
+Discord:			https://discord.meilisearch.com
+
+2026-06-23T16:06:11.800497Z  INFO actix_server::builder: starting 12 workers
+2026-06-23T16:06:11.800542Z  INFO actix_server::server: Actix runtime found; starting in Actix runtime
+2026-06-23T16:06:11.800562Z  INFO actix_server::server: starting service: "actix-web-service-0.0.0.0:7700", workers: 12, listening on: 0.0.0.0:7700
+
+
+general_settings:
+  store_model_in_db: true
+  supported_db_objects: ["mcp"]
+
+mcp_servers:
+  meilisearch:
+    transport: "stdio"
+    command: "/home/chamilto0516/prj/meilisearch-mcp/.venv/bin/python"
+    args:
+      - "/home/chamilto0516/prj/meilisearch-mcp/.venv/bin/meilisearch-mcp"
+    env:
+      MEILI_HTTP_ADDR: "http://bugbear:7700"
+
+curl -s 'http://localhost:4000/key/list' \
+  -H "Authorization: Bearer $LITELLM_MASTER_KEY" 
+
+
+Settings → Privacy and security → Site settings → View permissions and data stored across sites → search owlbear or localhost → Delete

@@ -1,0 +1,12 @@
+{
+  "meili": {
+    "http_addr": "http://localhost:7700",
+    "api_key": ""
+  },
+  "llm": {
+    "base_url": "http://owlbear:4000/v1",
+    "api_key": "replace-with-your-llm-api-key",
+    "model": "bulk-gemini25flt-c1",
+    "max_tokens": 65536
+  }
+}

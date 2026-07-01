@@ -1,0 +1,3 @@
+# Token usage and model selection
+
+When an LLM tool chain pulls large search results into context, token use can climb faster than expected because the model sees document content, metadata, and repeated prompt framing together. Smaller retrieval batches, strict field filtering, and compact result summaries usually reduce cost more effectively than swapping to a cheaper model after the fact. Model choice still matters: a fast low-cost model is useful for title generation or classification, while a larger reasoning model is better reserved for synthesis passes that operate on already-trimmed evidence.

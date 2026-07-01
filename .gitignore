@@ -1,0 +1,7 @@
+.agents/
+.codex/
+bin/
+.cache/
+LLM_Connection.txt
+msmgr.json
+test/output/
